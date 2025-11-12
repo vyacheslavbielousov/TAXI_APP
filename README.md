@@ -48,12 +48,6 @@ A C++ console application for calculating taxi trip costs with various pricing f
 - C++ compiler with C++11 support
 - Standard Library (`iostream`, `string`, `cmath`, `map`)
 
-## Compilation
-
-```bash
-g++ -std=c++11 -o taxi_calculator main.cpp
-```
-
 ## Usage
 
 1. Run the compiled executable:
