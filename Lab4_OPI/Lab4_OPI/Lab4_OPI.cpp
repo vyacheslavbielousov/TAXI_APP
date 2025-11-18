@@ -1,9 +1,80 @@
-﻿#include <iostream>
+#include <iostream>
 #include <string>
 #include <cmath>
 #include <map>
 
 using namespace std;
+
+void displayWelcomeMessage() {
+    cout << "Welcome to Taxi App!" << endl;
+    cout << " Please enter your travel details:" << endl;
+}
+/**
+ * Function to input trip distance
+ * @return distance in kilometers
+ */
+double enterDistance() {
+    double distance;
+    cout << "Enter trip distance (km): ";
+    cin >> distance;
+
+    // Input validation
+    if (distance <= 0) {
+        cout << "Invalid distance. Using default value 5 km." << endl;
+        return 5.0;
+    }
+    return distance;
+}
+/**
+ * Function to input estimated trip time
+ * @return time in minutes
+ */
+double enterTime() {
+    double time;
+    cout << "Enter estimated trip time (min): ";
+    cin >> time;
+
+    // Input validation
+    if (time <= 0) {
+        cout << "Invalid time. Using default value 15 min." << endl;
+        return 15.0;
+    }
+    return time;
+}
+/**
+ * Function to select car type
+ * @return selected car type as string
+ */
+string selectCarType() {
+    string type;
+    cout << "Available car types: standard, comfort, business, minivan" << endl;
+    cout << "Select car type: ";
+    cin >> type;
+
+    // Convert to lowercase for case-insensitive comparison
+    for (char& c : type) {
+        c = tolower(c);
+    }
+
+    return type;
+}
+/**
+ * Function to select time of day
+ * @return selected time of day as string
+ */
+string selectTimeOfDay() {
+    string time;
+    cout << "Select time of day (day/night/morning/evening): ";
+    cin >> time;
+
+    // Convert to lowercase for case-insensitive comparison
+    for (char& c : time) {
+        c = tolower(c);
+    }
+
+    return time;
+}
+
 
 // Tariff constants
 const double BASE_RATE = 25.0;        // Base cost
@@ -25,75 +96,6 @@ map<string, double> timeCoefficients = {
     {"morning", 1.1},
     {"evening", 1.15}
 };
-
-/**
- * Function to input trip distance
- * @return distance in kilometers
- */
-double enterDistance() {
-    double distance;
-    cout << "Enter trip distance (km): ";
-    cin >> distance;
-
-    // Input validation
-    if (distance <= 0) {
-        cout << "Invalid distance. Using default value 5 km." << endl;
-        return 5.0;
-    }
-    return distance;
-}
-
-/**
- * Function to input estimated trip time
- * @return time in minutes
- */
-double enterTime() {
-    double time;
-    cout << "Enter estimated trip time (min): ";
-    cin >> time;
-
-    // Input validation
-    if (time <= 0) {
-        cout << "Invalid time. Using default value 15 min." << endl;
-        return 15.0;
-    }
-    return time;
-}
-
-/**
- * Function to select car type
- * @return selected car type as string
- */
-string selectCarType() {
-    string type;
-    cout << "Available car types: standard, comfort, business, minivan" << endl;
-    cout << "Select car type: ";
-    cin >> type;
-
-    // Convert to lowercase for case-insensitive comparison
-    for (char& c : type) {
-        c = tolower(c);
-    }
-
-    return type;
-}
-
-/**
- * Function to select time of day
- * @return selected time of day as string
- */
-string selectTimeOfDay() {
-    string time;
-    cout << "Select time of day (day/night/morning/evening): ";
-    cin >> time;
-
-    // Convert to lowercase for case-insensitive comparison
-    for (char& c : time) {
-        c = tolower(c);
-    }
-
-    return time;
-}
 
 /**
  * Function to apply promo code discount
@@ -149,7 +151,7 @@ double applyPromoCode(double price) {
     }
     return price;
 }
-
+//=================================Start of Calculation Module=================================
 /**
  * Main function to calculate trip cost
  * @param distance - trip distance in km
@@ -276,6 +278,9 @@ void processCalculation() {
  * Main program entry point
  */
 int main() {
+
+    displayWelcomeMessage();
+
     // Process the calculation
     processCalculation();
 
