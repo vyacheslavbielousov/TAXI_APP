@@ -1,7 +1,4 @@
 # TAXI_APP
-# README.md
-
-# Taxi Fare Calculator
 
 A C++ console application for calculating taxi trip costs with various pricing factors, discounts, and detailed breakdowns.
 
