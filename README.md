@@ -1,4 +1,4 @@
-# TAXI_APP
+# TAXI_APP version 0.0.1
 
 A C++ console application for calculating taxi trip costs with various pricing factors, discounts, and detailed breakdowns.
 
