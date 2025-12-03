@@ -33,35 +33,20 @@ void displayWelcomeMessage() {
     cout << "Please enter your travel details:" << endl;
 }
 
-/**
- * Function to input trip distance
- * FIX APPLIED: Added check for non-numeric input (cin.fail)
- * @return distance in kilometers
- */
 double enterDistance() {
     double distance;
     cout << "Enter trip distance (km): ";
     cin >> distance;
 
-    // FIX: Check if input is not a number (e.g., user entered 'n')
-    if (cin.fail()) {
-        cin.clear(); // Clear error flag
-        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard bad input
-        cout << "Invalid input (non-numeric). Using default value 5 km." << endl;
-        return 5.0;
-    }
-
-    // Input validation for negative numbers
+    // Input validation
     if (distance <= 0) {
         cout << "Invalid distance. Using default value 5 km." << endl;
         return 5.0;
     }
     return distance;
 }
-
 /**
  * Function to input estimated trip time
- * FIX APPLIED: Added check for non-numeric input (cin.fail)
  * @return time in minutes
  */
 double enterTime() {
@@ -69,15 +54,7 @@ double enterTime() {
     cout << "Enter estimated trip time (min): ";
     cin >> time;
 
-    // FIX: Check if input is not a number
-    if (cin.fail()) {
-        cin.clear();
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        cout << "Invalid input (non-numeric). Using default value 15 min." << endl;
-        return 15.0;
-    }
-
-    // Input validation for negative numbers
+    // Input validation
     if (time <= 0) {
         cout << "Invalid time. Using default value 15 min." << endl;
         return 15.0;
@@ -323,3 +300,4 @@ int main() {
 
     return 0;
 }
+
