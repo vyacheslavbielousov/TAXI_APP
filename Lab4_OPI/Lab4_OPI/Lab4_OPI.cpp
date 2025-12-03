@@ -2,17 +2,37 @@
 #include <string>
 #include <cmath>
 #include <map>
+#include <limits> // Для numeric_limits
+#include <algorithm> // Для transform
 
 using namespace std;
 
+// Tariff constants
+const double BASE_RATE = 25.0;        // Base cost
+const double RATE_PER_KM = 8.0;       // Cost per kilometer
+const double RATE_PER_MIN = 2.0;      // Cost per minute
+
+// Car types and their coefficients
+map<string, double> carTypes = {
+    {"standard", 1.0},
+    {"comfort", 1.3},
+    {"business", 1.8},
+    {"minivan", 2.0}
+};
+
+// Time of day coefficients
+map<string, double> timeCoefficients = {
+    {"day", 1.0},
+    {"night", 1.2},
+    {"morning", 1.1},
+    {"evening", 1.15}
+};
+
 void displayWelcomeMessage() {
     cout << "Welcome to Taxi App!" << endl;
-    cout << " Please enter your travel details:" << endl;
+    cout << "Please enter your travel details:" << endl;
 }
-/**
- * Function to input trip distance
- * @return distance in kilometers
- */
+
 double enterDistance() {
     double distance;
     cout << "Enter trip distance (km): ";
@@ -41,6 +61,7 @@ double enterTime() {
     }
     return time;
 }
+
 /**
  * Function to select car type
  * @return selected car type as string
@@ -58,6 +79,7 @@ string selectCarType() {
 
     return type;
 }
+
 /**
  * Function to select time of day
  * @return selected time of day as string
@@ -75,30 +97,53 @@ string selectTimeOfDay() {
     return time;
 }
 
+/**
+ * Main function to calculate trip cost
+ * @param distance - trip distance in km
+ * @param time - trip time in minutes
+ * @param carType - selected car type
+ * @param timeOfDay - selected time of day
+ * @return calculated trip cost
+ */
+double calculateTripCost(double distance, double time, const string& carType, const string& timeOfDay) {
+    // Calculate base cost
+    double cost = BASE_RATE;
 
-// Tariff constants
-const double BASE_RATE = 25.0;        // Base cost
-const double RATE_PER_KM = 8.0;       // Cost per kilometer
-const double RATE_PER_MIN = 2.0;      // Cost per minute
+    // Add distance cost
+    cost += distance * RATE_PER_KM;
 
-// Car types and their coefficients
-map<string, double> carTypes = {
-    {"standard", 1.0},
-    {"comfort", 1.3},
-    {"business", 1.8},
-    {"minivan", 2.0}
-};
+    // Add time cost
+    cost += time * RATE_PER_MIN;
 
-// Time of day coefficients
-map<string, double> timeCoefficients = {
-    {"day", 1.0},
-    {"night", 1.2},
-    {"morning", 1.1},
-    {"evening", 1.15}
-};
+    // Apply car type coefficient
+    // Note: inputs are already lowercase from selection functions
+    if (carTypes.find(carType) != carTypes.end()) {
+        double carCoefficient = carTypes[carType];
+        cost *= carCoefficient;
+    }
+    else {
+        // Fallback is handled silently here, but logged in printCalculationDetails
+        cost *= carTypes["standard"];
+    }
+
+    // Apply time of day coefficient
+    if (timeCoefficients.find(timeOfDay) != timeCoefficients.end()) {
+        double timeCoefficient = timeCoefficients[timeOfDay];
+        cost *= timeCoefficient;
+    }
+    else {
+        cost *= timeCoefficients["day"];
+    }
+
+    // Round to 2 decimal places
+    cost = round(cost * 100) / 100;
+
+    return cost;
+}
 
 /**
  * Function to apply promo code discount
+ * FIX APPLIED: Added final rounding to 2 decimal places
  * @param price - current price before discount
  * @return price after applying promo code
  */
@@ -112,7 +157,7 @@ double applyPromoCode(double price) {
         cout << "Enter promo code: ";
         cin >> code;
 
-        // Convert to uppercase for case-insensitive comparison
+        // Convert to uppercase
         for (char& c : code) {
             c = toupper(c);
         }
@@ -138,7 +183,7 @@ double applyPromoCode(double price) {
         }
         else if (code == "TAXI50") {
             double discount = price * 0.5;
-            price *= 0.5;  // 50% discount (max 100 UAH)
+            price *= 0.5;  // 50% discount
             if (discount > 100) {
                 price += (discount - 100);
                 discount = 100;
@@ -149,78 +194,36 @@ double applyPromoCode(double price) {
             cout << "Invalid promo code" << endl;
         }
     }
-    return price;
-}
-//=================================Start of Calculation Module=================================
-/**
- * Main function to calculate trip cost
- * @param distance - trip distance in km
- * @param time - trip time in minutes
- * @param carType - selected car type
- * @param timeOfDay - selected time of day
- * @return calculated trip cost
- */
-double calculateTripCost(double distance, double time, const string& carType, const string& timeOfDay) {
-    // Calculate base cost
-    double cost = BASE_RATE;
-
-    // Add distance cost
-    cost += distance * RATE_PER_KM;
-
-    // Add time cost
-    cost += time * RATE_PER_MIN;
-
-    // Apply car type coefficient
-    string lowerCarType = carType;
-    for (char& c : lowerCarType) {
-        c = tolower(c);
-    }
-
-    if (carTypes.find(lowerCarType) != carTypes.end()) {
-        double carCoefficient = carTypes[lowerCarType];
-        cost *= carCoefficient;
-    }
-    else {
-        cout << "Invalid car type, using standard" << endl;
-        cost *= carTypes["standard"];
-    }
-
-    // Apply time of day coefficient
-    string lowerTimeOfDay = timeOfDay;
-    for (char& c : lowerTimeOfDay) {
-        c = tolower(c);
-    }
-
-    if (timeCoefficients.find(lowerTimeOfDay) != timeCoefficients.end()) {
-        double timeCoefficient = timeCoefficients[lowerTimeOfDay];
-        cost *= timeCoefficient;
-    }
-    else {
-        cout << "Invalid time of day, using daytime rate" << endl;
-        cost *= timeCoefficients["day"];
-    }
-
-    // Round to 2 decimal places
-    cost = round(cost * 100) / 100;
-
-    return cost;
+    
+    // FIX: Round result to 2 decimal places to avoid issues like 95.724
+    return round(price * 100) / 100;
 }
 
 /**
  * Function to display detailed calculation breakdown
- * @param distance - trip distance
- * @param time - trip time
- * @param carType - selected car type
- * @param timeOfDay - selected time of day
- * @param finalCost - calculated final cost
+ * FIX APPLIED: Logic to detect invalid car/time types and show actual fallback values
  */
 void printCalculationDetails(double distance, double time, const string& carType,
     const string& timeOfDay, double finalCost) {
+    
     cout << "\n=== DETAILED CALCULATION BREAKDOWN ===" << endl;
     cout << "Distance: " << distance << " km" << endl;
     cout << "Time: " << time << " min" << endl;
-    cout << "Car type: " << carType << " (coefficient " << carTypes[carType] << ")" << endl;
-    cout << "Time of day: " << timeOfDay << " (coefficient " << timeCoefficients[timeOfDay] << ")" << endl;
+
+    // FIX: Handle Car Type Reporting logic
+    if (carTypes.find(carType) != carTypes.end()) {
+        cout << "Car type: " << carType << " (coefficient " << carTypes[carType] << ")" << endl;
+    } else {
+        cout << "Car type: " << carType << " (Invalid - using Standard coeff " << carTypes["standard"] << ")" << endl;
+    }
+
+    // FIX: Handle Time of Day Reporting logic
+    if (timeCoefficients.find(timeOfDay) != timeCoefficients.end()) {
+        cout << "Time of day: " << timeOfDay << " (coefficient " << timeCoefficients[timeOfDay] << ")" << endl;
+    } else {
+        cout << "Time of day: " << timeOfDay << " (Invalid - using Day coeff " << timeCoefficients["day"] << ")" << endl;
+    }
+
     cout << "Base rate: " << BASE_RATE << " UAH" << endl;
     cout << "Distance cost: " << distance << " km * " << RATE_PER_KM << " UAH/km = " << distance * RATE_PER_KM << " UAH" << endl;
     cout << "Time cost: " << time << " min * " << RATE_PER_MIN << " UAH/min = " << time * RATE_PER_MIN << " UAH" << endl;
@@ -245,7 +248,7 @@ void compareCarTypes(double distance, double time, const string& timeOfDay) {
  * Orchestrates the entire price calculation process
  */
 void processCalculation() {
-    cout << "=== TRIP COST CALCULATION ===" << endl;
+    cout << "\n=== TRIP COST CALCULATION ===" << endl;
 
     // Input trip parameters
     double distance = enterDistance();
@@ -278,7 +281,6 @@ void processCalculation() {
  * Main program entry point
  */
 int main() {
-
     displayWelcomeMessage();
 
     // Process the calculation
@@ -298,3 +300,4 @@ int main() {
 
     return 0;
 }
+
