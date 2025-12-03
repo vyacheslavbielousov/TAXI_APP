@@ -74,6 +74,32 @@ string selectTimeOfDay() {
 
     return time;
 }
+  
+// Apply car type coefficient
+
+    if (carTypes.find(lowerCarType) != carTypes.end()) {
+        double carCoefficient = carTypes[lowerCarType];
+        cost *= carCoefficient;
+    }
+    else {
+        cout << "Invalid car type, using standard" << endl;
+        cost *= carTypes["standard"];
+    }
+
+    if (timeCoefficients.find(lowerTimeOfDay) != timeCoefficients.end()) {
+        double timeCoefficient = timeCoefficients[lowerTimeOfDay];
+        cost *= timeCoefficient;
+    }
+    else {
+        cout << "Invalid time of day, using daytime rate" << endl;
+        cost *= timeCoefficients["day"];
+    }
+
+    // Round to 2 decimal places
+    cost = round(cost * 100) / 100;
+
+    return cost;
+}
 
 
 // Tariff constants
@@ -170,41 +196,6 @@ double calculateTripCost(double distance, double time, const string& carType, co
     // Add time cost
     cost += time * RATE_PER_MIN;
 
-    // Apply car type coefficient
-    string lowerCarType = carType;
-    for (char& c : lowerCarType) {
-        c = tolower(c);
-    }
-
-    if (carTypes.find(lowerCarType) != carTypes.end()) {
-        double carCoefficient = carTypes[lowerCarType];
-        cost *= carCoefficient;
-    }
-    else {
-        cout << "Invalid car type, using standard" << endl;
-        cost *= carTypes["standard"];
-    }
-
-    // Apply time of day coefficient
-    string lowerTimeOfDay = timeOfDay;
-    for (char& c : lowerTimeOfDay) {
-        c = tolower(c);
-    }
-
-    if (timeCoefficients.find(lowerTimeOfDay) != timeCoefficients.end()) {
-        double timeCoefficient = timeCoefficients[lowerTimeOfDay];
-        cost *= timeCoefficient;
-    }
-    else {
-        cout << "Invalid time of day, using daytime rate" << endl;
-        cost *= timeCoefficients["day"];
-    }
-
-    // Round to 2 decimal places
-    cost = round(cost * 100) / 100;
-
-    return cost;
-}
 
 /**
  * Function to display detailed calculation breakdown
@@ -298,3 +289,4 @@ int main() {
 
     return 0;
 }
+
