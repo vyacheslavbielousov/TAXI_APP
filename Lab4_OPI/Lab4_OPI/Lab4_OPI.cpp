@@ -217,7 +217,7 @@ double applyPromoCode(double price) {
             cout << "Invalid promo code" << endl;
         }
     }
-
+    
     // FIX: Round result to 2 decimal places to avoid issues like 95.724
     return round(price * 100) / 100;
 }
@@ -228,26 +228,39 @@ double applyPromoCode(double price) {
  */
 void printCalculationDetails(double distance, double time, const string& carType,
     const string& timeOfDay, double finalCost) {
-
+    
     cout << "\n=== DETAILED CALCULATION BREAKDOWN ===" << endl;
     cout << "Distance: " << distance << " km" << endl;
     cout << "Time: " << time << " min" << endl;
 
-    // FIX: Handle Car Type Reporting logic
-    if (carTypes.find(carType) != carTypes.end()) {
-        cout << "Car type: " << carType << " (coefficient " << carTypes[carType] << ")" << endl;
-    }
-    else {
-        cout << "Car type: " << carType << " (Invalid - using Standard coeff " << carTypes["standard"] << ")" << endl;
-    }
+    // FIX: Show the ACTUAL car type used, not the invalid user input
+    string displayCarType = carType;
+    double displayCarCoeff = 0;
 
-    // FIX: Handle Time of Day Reporting logic
+    if (carTypes.find(carType) != carTypes.end()) {
+        displayCarCoeff = carTypes[carType];
+    } else {
+        // If invalid, we show "standard" because that's what was used for calculation
+        displayCarType = "standard"; 
+        displayCarCoeff = carTypes["standard"];
+        // Optional: warn user that input was replaced
+        cout << "(Note: Invalid car type '" << carType << "' replaced with default)" << endl;
+    }
+    cout << "Car type: " << displayCarType << " (coefficient " << displayCarCoeff << ")" << endl;
+
+    // FIX: Show the ACTUAL time of day used, not the invalid user input
+    string displayTimeOfDay = timeOfDay;
+    double displayTimeCoeff = 0;
+
     if (timeCoefficients.find(timeOfDay) != timeCoefficients.end()) {
-        cout << "Time of day: " << timeOfDay << " (coefficient " << timeCoefficients[timeOfDay] << ")" << endl;
+        displayTimeCoeff = timeCoefficients[timeOfDay];
+    } else {
+        // If invalid, we show "day" because that's what was used for calculation
+        displayTimeOfDay = "day";
+        displayTimeCoeff = timeCoefficients["day"];
+        cout << "(Note: Invalid time '" << timeOfDay << "' replaced with default)" << endl;
     }
-    else {
-        cout << "Time of day: " << timeOfDay << " (Invalid - using Day coeff " << timeCoefficients["day"] << ")" << endl;
-    }
+    cout << "Time of day: " << displayTimeOfDay << " (coefficient " << displayTimeCoeff << ")" << endl;
 
     cout << "Base rate: " << BASE_RATE << " UAH" << endl;
     cout << "Distance cost: " << distance << " km * " << RATE_PER_KM << " UAH/km = " << distance * RATE_PER_KM << " UAH" << endl;
