@@ -32,6 +32,7 @@ void displayWelcomeMessage() {
     cout << "Welcome to Taxi App!" << endl;
     cout << "Please enter your travel details:" << endl;
 }
+
 /**
  * Function to input trip distance
  * FIX APPLIED: Added check for non-numeric input (cin.fail)
@@ -216,7 +217,7 @@ double applyPromoCode(double price) {
             cout << "Invalid promo code" << endl;
         }
     }
-    
+
     // FIX: Round result to 2 decimal places to avoid issues like 95.724
     return round(price * 100) / 100;
 }
@@ -227,7 +228,7 @@ double applyPromoCode(double price) {
  */
 void printCalculationDetails(double distance, double time, const string& carType,
     const string& timeOfDay, double finalCost) {
-    
+
     cout << "\n=== DETAILED CALCULATION BREAKDOWN ===" << endl;
     cout << "Distance: " << distance << " km" << endl;
     cout << "Time: " << time << " min" << endl;
@@ -235,14 +236,16 @@ void printCalculationDetails(double distance, double time, const string& carType
     // FIX: Handle Car Type Reporting logic
     if (carTypes.find(carType) != carTypes.end()) {
         cout << "Car type: " << carType << " (coefficient " << carTypes[carType] << ")" << endl;
-    } else {
+    }
+    else {
         cout << "Car type: " << carType << " (Invalid - using Standard coeff " << carTypes["standard"] << ")" << endl;
     }
 
     // FIX: Handle Time of Day Reporting logic
     if (timeCoefficients.find(timeOfDay) != timeCoefficients.end()) {
         cout << "Time of day: " << timeOfDay << " (coefficient " << timeCoefficients[timeOfDay] << ")" << endl;
-    } else {
+    }
+    else {
         cout << "Time of day: " << timeOfDay << " (Invalid - using Day coeff " << timeCoefficients["day"] << ")" << endl;
     }
 
@@ -322,4 +325,3 @@ int main() {
 
     return 0;
 }
-
